@@ -1,6 +1,9 @@
 package one.digitalinnovation.gof.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import one.digitalinnovation.gof.model.Cliente;
@@ -19,7 +23,8 @@ import one.digitalinnovation.gof.service.ClienteService;
  * a complexidade de integrações (Banco de Dados H2 e API do ViaCEP) em uma
  * interface simples e coesa (API REST).
  * 
- * @author falvojr
+ *@author nathanesdras 
+ *@author falvojr
  */
 @RestController
 @RequestMapping("clientes")
@@ -54,5 +59,14 @@ public class ClienteRestController {
 	public ResponseEntity<Void> deletar(@PathVariable Long id) {
 		clienteService.deletar(id);
 		return ResponseEntity.ok().build();
+	}
+
+	// Nova rota: Paginação de clientes
+	@GetMapping("/paginado")
+	public ResponseEntity<Page<Cliente>> buscarTodosPaginado(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return ResponseEntity.ok(clienteService.buscarTodosPaginado(pageable));
 	}
 }
